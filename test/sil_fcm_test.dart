@@ -102,29 +102,33 @@ void main() {
     expect(fbm.requestNotificationPermissions, returnsNormally);
   });
 
-  test('should initilizeNotifications', () {
+  test('should initializeNotifications', () {
     final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-    final MockFlutterLocalNotificationsPlugin flns =
+    final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
         MockFlutterLocalNotificationsPlugin();
-    final SILFCM fcm =
-        SILFCM(firebaseMessagingObj: fbm, localNotifications: flns);
+    final SILFCM fcm = SILFCM(
+        firebaseMessagingObj: fbm,
+        localNotifications: mockFlutterNotificationsPlugin);
 
-    fcm.initilizeNotifications();
+    fcm.initializeNotifications();
 
-    expectLater(flns.initialize.call, isA<Function>());
+    expectLater(
+        mockFlutterNotificationsPlugin.initialize.call, isA<Function>());
 
-    expectSync(flns.initialize.call, throwsNoSuchMethodError);
+    expectSync(mockFlutterNotificationsPlugin.initialize.call,
+        throwsNoSuchMethodError);
   });
 
-  test('should intializeIOSInitializationSettings', () {
+  test('should initializeIOSInitializationSettings', () {
     final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-    final MockFlutterLocalNotificationsPlugin flns =
+    final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
         MockFlutterLocalNotificationsPlugin();
-    final SILFCM fcm =
-        SILFCM(firebaseMessagingObj: fbm, localNotifications: flns);
+    final SILFCM fcm = SILFCM(
+        firebaseMessagingObj: fbm,
+        localNotifications: mockFlutterNotificationsPlugin);
 
     final IOSInitializationSettings iosSettings =
-        fcm.intializeIOSInitializationSettings();
+        fcm.initializeIOSInitializationSettings();
 
     expect(iosSettings, isA<IOSInitializationSettings>());
     expect(iosSettings.onDidReceiveLocalNotification, isNotNull);

@@ -55,14 +55,14 @@ class SILFCM {
   final BehaviorSubject<String> selectNotificationSubject =
       BehaviorSubject<String>();
 
-  /// create Firrbasemessaging instance.
+  /// create FirebaseMessaging instance.
   //final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
 
   /// [configure] is responsible for correctly setting up local notifications ( and asking for permission if needed)
   /// and wiring-up firebase messaging [onMessage] callback to show fcm messages
   // ignore: always_declare_return_types
   get configure async {
-    await this.initilizeNotifications();
+    await this.initializeNotifications();
     if (Platform.isIOS) {
       this.requestIOSLocalNotificationsPermissions();
     }
@@ -70,19 +70,19 @@ class SILFCM {
     firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) {
         // use local notifications here
-        print('FCM message [onmessage]: $message');
+        print('FCM message [onMessage]: $message');
         this._showNotification(message);
         return;
       },
       onLaunch: (Map<String, dynamic> message) {
         // use local notifications here
-        print('FCM message [onlaunch]: $message');
+        print('FCM message [onLaunch]: $message');
         this._showNotification(message);
         return;
       },
       onResume: (Map<String, dynamic> message) {
         // use local notifications here
-        print('FCM message [onresume]: $message');
+        print('FCM message [onResume]: $message');
         this._showNotification(message);
         return;
       },
@@ -94,7 +94,7 @@ class SILFCM {
 
   Future<bool> resetToken() => firebaseMessaging.deleteInstanceID();
 
-  /// [requestMessagingPermission] request platform aware messagin permissions
+  /// [requestMessagingPermission] request platform aware messaging permissions
   void requestMessagingPermission(FCMMessageHandler onPermissions) {
     if (Platform.isIOS) {
       this.requestIOSMessagingPermission(onPermissions);
@@ -103,13 +103,13 @@ class SILFCM {
 
   /// [refreshDeviceToken] called to refresh the device.
   /// The callback should ideally receive the new token and save
-  /// it to a remore server
+  /// it to a remove server
   void refreshDeviceToken(FCMMessageHandler onRefresh) =>
       firebaseMessaging.onTokenRefresh.listen((String token) async {
         await onRefresh(data: token);
       });
 
-  /// [setUpMessagingListener] sets up the confugartion for when messages are received
+  /// [setUpMessagingListener] sets up the configuration for when messages are received
   // setUpMessagingListener(
   //     {MessageCallback onMessage,
   //     MessageCallback onLaunch,
@@ -135,7 +135,7 @@ class SILFCM {
         sound: true, badge: true, alert: true, provisional: true));
   }
 
-  IOSInitializationSettings intializeIOSInitializationSettings() {
+  IOSInitializationSettings initializeIOSInitializationSettings() {
     return IOSInitializationSettings(
       requestAlertPermission: false,
       requestBadgePermission: false,
@@ -148,13 +148,13 @@ class SILFCM {
     );
   }
 
-  /// [initilizeNotifications] bootstraps local notifciations to the application
-  Future<void> initilizeNotifications() async {
+  /// [initializeNotifications] bootstraps local notifications to the application
+  Future<void> initializeNotifications() async {
     AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('app_icon');
 
     IOSInitializationSettings iOSSettings =
-        this.intializeIOSInitializationSettings();
+        this.initializeIOSInitializationSettings();
 
     InitializationSettings initializationSettings =
         InitializationSettings(androidSettings, iOSSettings);
