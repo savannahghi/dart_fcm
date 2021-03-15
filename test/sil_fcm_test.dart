@@ -1,45 +1,11 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_local_notifications/src/platform_specifics/ios/initialization_settings.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:sil_fcm/sil_fcm.dart';
 import 'package:sil_fcm/src/reminder_notification.dart';
 
-// class MockFirebaseMessaging extends Mock implements FirebaseMessaging {
-//   @override
-//   Future<String> getToken() async {
-//     return Future<String>.value('token');
-//   }
-
-//   @override
-//   Future<bool> deleteInstanceID() async {
-//     return Future<bool>.value(true);
-//   }
-
-//   @override
-//   Stream<String> get onTokenRefresh {
-//     return Stream<String>.value('new-token');
-//   }
-
-//   @override
-//   Stream<IosNotificationSettings> get onIosSettingsRegistered {
-//     return Stream<IosNotificationSettings>.value(IosNotificationSettings());
-//   }
-
-//   @override
-//   FutureOr<bool> requestNotificationPermissions([
-//     IosNotificationSettings iosSettings = const IosNotificationSettings(),
-//   ]) {
-//     return Future<bool>.value(true);
-//   }
-// }
-
-// class MockFlutterLocalNotificationsPlugin extends Mock
-//     implements FlutterLocalNotificationsPlugin {
-//   @override
-//   Future<bool> initialize(InitializationSettings initializationSettings,
-//       {SelectNotificationCallback onSelectNotification}) async {
-//     await onSelectNotification('test');
-//     return true;
-//   }
-// }
+import 'mocks.dart';
 
 void main() {
   test('should instantiate ReminderNotification', () {
@@ -53,23 +19,94 @@ void main() {
     expect(notification.payload, 'payload');
   });
 
-  // test('should instantiate SILFCM of correct type', () {
-  //   final SILFCM fcm = SILFCM();
-  //   expect(fcm, isA<SILFCM>());
-  //   // fcm.getDeviceToken().then((String value) => expect(value, isA<String>()));
-  // });
+  test('should fail to create instance of  SILFCM', () {
+    expect(() => SILFCM(), throwsException);
+  });
 
-  // test('should get device token', () {
-  //   final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-  //   final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
-  //   fcm.getDeviceToken().then((String value) => expect(value, isA<String>()));
-  // });
+  test('should instantiate SILFCM', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm, isA<SILFCM>());
+  });
 
-  // test('should get reset device token', () {
-  //   final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-  //   final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
-  //   fcm.resetToken().then((bool value) => expect(value, isA<bool>()));
-  // });
+  test('should get device token', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm, isA<SILFCM>());
+  });
+
+  test('should call initializeIOSInitializationSettings', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm, isA<SILFCM>());
+    final IOSInitializationSettings settings =
+        fcm.initializeIOSInitializationSettings();
+    expect(settings, isA<IOSInitializationSettings>());
+
+    expect(settings.onDidReceiveLocalNotification, isNotNull);
+    expect(settings.onDidReceiveLocalNotification!(1, 'test', 'test', 'test'),
+        isA<Future<dynamic>>());
+  });
+
+  test('should get  device token', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm.getDeviceToken(), isA<Future<String>>());
+    fcm
+        .getDeviceToken()
+        .then((String? value) => expect(value, equals('token')));
+  });
+
+  test('should delete device token', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm.resetToken(), isA<Future<void>>());
+  });
+
+  test('should request ios permission', () async {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm.requestIOSFCMMessagingPermission(),
+        isA<Future<NotificationSettings>>());
+
+    final NotificationSettings perms =
+        await fcm.requestIOSFCMMessagingPermission();
+
+    expect(perms.alert, AppleNotificationSetting.enabled);
+    expect(perms.announcement, AppleNotificationSetting.enabled);
+  });
+
+  test('should create android channel', () async {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    await fcm.createAndroidHighImportanceChannel();
+    expect(fcm.androidChannel, isNotNull);
+    expect(fcm.androidChannel, isA<AndroidNotificationChannel>());
+  });
+
+  test('should initialize local notifications', () async {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final MockFlutterLocalNotificationsPlugin ln =
+        MockFlutterLocalNotificationsPlugin();
+    final SILFCM fcm =
+        SILFCM(firebaseMessagingObj: fbm, localNotifications: ln);
+
+    expect(fcm.initializeLocalNotifications(), isA<Future<void>>());
+
+    expect(fcm.initializeLocalNotifications(), completes);
+  });
+
+  test('should setup listenOnDeviceTokenChanges', () async {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm.listenOnDeviceTokenChanges(true), isA<Future<void>>());
+  });
+
+  test('should setup message listener', () async {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm.onMessageSetup(), isA<Future<void>>());
+  });
 
   // test('should refreshDeviceToken', () {
   //   final MockFirebaseMessaging fbm = MockFirebaseMessaging();

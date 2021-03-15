@@ -30,11 +30,9 @@ class SILFCM {
   late AndroidNotificationChannel androidChannel;
 
   final BehaviorSubject<ReminderNotification>
-      //ignore: close_sinks
       didReceiveLocalNotificationSubject =
       BehaviorSubject<ReminderNotification>();
 
-  //ignore: close_sinks
   final BehaviorSubject<String> selectNotificationSubject =
       BehaviorSubject<String>();
 
@@ -74,9 +72,10 @@ class SILFCM {
     return Future<SILFCM>.value(this);
   }
 
-  void listenOnDeviceTokenChanges(dynamic graphQLClient) {}
+  /// [listenOnDeviceTokenChanges] when initiate a callback once the device token changes
+  Future<void> listenOnDeviceTokenChanges(dynamic graphQLClient) async {}
 
-  void onMessageSetup() {
+  Future<void> onMessageSetup() async {
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) {
         /// handle [notifications].The payload contains a notification property, which will be used to present a visible notification to the user.
