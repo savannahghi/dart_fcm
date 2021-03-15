@@ -1,10 +1,10 @@
 image:
-  name: eu.gcr.io/savannah-emr/fls-image:20.11.20
+  name: eu.gcr.io/savannah-emr/fls-image:10-03-21-nullsafety
 
 stages:
   - test
 
-SILFCMTests:
+sil_fcm_tests:
   stage: test
   timeout: 5 minutes
   tags:

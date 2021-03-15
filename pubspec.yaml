@@ -4,21 +4,27 @@ version: 0.0.1
 author: dmwangi@savannahinformatics.com
 homepage: https://gitlab.slade360emr.com/optimalhealth/sil_dart_utils
 
-environment:
-  sdk: '>=2.8.0 <3.0.0'
+environment:  
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=2.0.0"
+
 
 dependencies:
+  firebase_core: "^1.0.1"
+  firebase_messaging: "^9.0.0" 
   flutter:
-    sdk: flutter
-
-  firebase_messaging: ^7.0.3
-  flutter_local_notifications: ^1.4.4+1
-  rxdart: ^0.24.0
+    sdk: flutter   
+  flutter_local_notifications: ^5.0.0-nullsafety.1
+  rxdart: ^0.26.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mockito: ^4.1.1
+  lint: ^1.0.0 
+  mockito: ^5.0.0   
+  test:
+  test_api: '>=0.2.19'
+
   
 
 flutter:

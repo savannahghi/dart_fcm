@@ -32,6 +32,10 @@ apply plugin: 'com.google.gms.google-services'
       <action android:name="FLUTTER_NOTIFICATION_CLICK" />
       <category android:name="android.intent.category.DEFAULT" />
   </intent-filter>
+
+  <meta-data
+  android:name="com.google.firebase.messaging.default_notification_channel_id"
+  android:value="high_importance_channel" />
 ```
 
 - Add the lastet version of firebase messaging in app gradle implementations
