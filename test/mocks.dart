@@ -11,6 +11,13 @@ class MockFirebaseMessaging extends Mock implements FirebaseMessaging {
   }
 
   @override
+  Future<void> setForegroundNotificationPresentationOptions({
+    bool alert = false,
+    bool badge = false,
+    bool sound = false,
+  }) async {}
+
+  @override
   Future<void> deleteToken({String? senderId}) async {}
 
   @override

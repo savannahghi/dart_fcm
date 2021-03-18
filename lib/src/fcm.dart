@@ -1,9 +1,8 @@
 library sil_fcm;
 
-import 'dart:io' show Platform;
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sil_fcm/src/reminder_notification.dart';
@@ -38,9 +37,10 @@ class SILFCM {
 
   /// [configure] is responsible for correctly setting up local notifications ( and asking for permission if needed)
   /// and wiring-up firebase messaging [onMessage] callback to show fcm messages
-  Future<SILFCM> configure() async {
+  Future<SILFCM> configure({required BuildContext context}) async {
+    final TargetPlatform platform = Theme.of(context).platform;
     await this.initializeLocalNotifications();
-    if (Platform.isIOS) {
+    if (platform == TargetPlatform.iOS) {
       this.requestIOSLocalNotificationsPermissions();
       final NotificationSettings settings =
           await this.requestIOSFCMMessagingPermission();
@@ -50,7 +50,7 @@ class SILFCM {
     }
 
     // create high importance channel for android
-    if (Platform.isAndroid) {
+    if (platform == TargetPlatform.android) {
       this.createAndroidHighImportanceChannel();
     }
 
@@ -67,7 +67,7 @@ class SILFCM {
       sound: true,
     );
 
-    onMessageSetup();
+    onMessageSetup(context: context);
 
     return Future<SILFCM>.value(this);
   }
@@ -75,7 +75,8 @@ class SILFCM {
   /// [listenOnDeviceTokenChanges] when initiate a callback once the device token changes
   Future<void> listenOnDeviceTokenChanges(dynamic graphQLClient) async {}
 
-  Future<void> onMessageSetup() async {
+  Future<void> onMessageSetup({required BuildContext context}) async {
+    final TargetPlatform platform = Theme.of(context).platform;
     FirebaseMessaging.onMessage.listen(
       (RemoteMessage message) {
         /// handle [notifications].The payload contains a notification property, which will be used to present a visible notification to the user.
@@ -83,7 +84,7 @@ class SILFCM {
         late NotificationDetails notificationDetails;
 
         /// setup android NotificationDetails
-        if (Platform.isAndroid) {
+        if (platform == TargetPlatform.android) {
           final AndroidNotification? android = message.notification?.android;
           notificationDetails = NotificationDetails(
             android: AndroidNotificationDetails(
@@ -96,7 +97,7 @@ class SILFCM {
         }
 
         /// setup ios NotificationDetails
-        if (Platform.isIOS) {
+        if (platform == TargetPlatform.iOS) {
           notificationDetails = const NotificationDetails();
         }
 

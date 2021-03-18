@@ -1,4 +1,6 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications/src/platform_specifics/ios/initialization_settings.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -102,24 +104,87 @@ void main() {
     expect(fcm.listenOnDeviceTokenChanges(true), isA<Future<void>>());
   });
 
-  test('should setup message listener', () async {
+  testWidgets('should configure properly on ios ', (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
+        MockFlutterLocalNotificationsPlugin();
     final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
-    expect(fcm.onMessageSetup(), isA<Future<void>>());
+    final SILFCM fcm = SILFCM(
+        firebaseMessagingObj: fbm,
+        localNotifications: mockFlutterNotificationsPlugin);
+    await tester.pumpWidget(Builder(builder: (BuildContext context) {
+      return MaterialApp(
+        home: TextButton(
+            onPressed: () {
+              fcm.configure(context: context);
+            },
+            child: const Text('configure on ios')),
+      );
+    }));
+
+    // should find the textButton
+    expect(find.byType(TextButton), findsOneWidget);
+
+    // should successfully tap the textbutton
+    await tester.tap(find.byType(TextButton));
+    await tester.pumpAndSettle();
+    // should call configure method and initialize localNotifications
+    final IOSInitializationSettings iosSettings =
+        fcm.initializeIOSInitializationSettings();
+    // expect  all permisions to be false
+    expect(iosSettings.requestAlertPermission, false);
+    expect(iosSettings.requestBadgePermission, false);
+    expect(iosSettings.requestSoundPermission, false);
+    expectSync(
+        iosSettings.onDidReceiveLocalNotification!(1, 'test', 'test', 'test'),
+        isA<Future<void>>());
+    // expect request ios locationn permision makes the permsions true
+
+    //expect get token is called
+    expect(fcm.getDeviceToken(), isA<Future<String?>>());
+
+    //expect on set up method is called
+
+    debugDefaultTargetPlatformOverride = null;
   });
 
-  // test('should refreshDeviceToken', () {
-  //   final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-  //   final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+  testWidgets('should configure properly on android ',
+      (WidgetTester tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.android;
+    final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
+        MockFlutterLocalNotificationsPlugin();
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(
+        firebaseMessagingObj: fbm,
+        localNotifications: mockFlutterNotificationsPlugin);
+    await tester.pumpWidget(Builder(builder: (BuildContext context) {
+      return MaterialApp(
+        home: TextButton(
+            onPressed: () {
+              fcm.configure(context: context);
+            },
+            child: const Text('configure on android')),
+      );
+    }));
 
-  //   final Future<String> Function({dynamic data}) func = ({dynamic data}) {
-  //     return Future<String>.value('new-token');
-  //   };
+    // should find the textButton
+    expect(find.byType(TextButton), findsOneWidget);
 
-  //   fcm.refreshDeviceToken(func);
+    // should successfully tap the textbutton
+    await tester.tap(find.byType(TextButton));
+    await tester.pumpAndSettle();
 
-  //   expect(fbm.onTokenRefresh.first, completes);
-  // });
+    //create high importance channel method is called successfully
+    expect(fcm.createAndroidHighImportanceChannel(), isA<Future<void>>());
+    expect(fcm.createAndroidHighImportanceChannel(), isNotNull);
+
+    //expect get token is called
+    expect(fcm.getDeviceToken(), isA<Future<String?>>());
+
+    //expect on set up method is called
+
+    debugDefaultTargetPlatformOverride = null;
+  });
 
   // test('should requestIOSMessagingPermission', () {
   //   final MockFirebaseMessaging fbm = MockFirebaseMessaging();
@@ -135,38 +200,39 @@ void main() {
   //   expect(fbm.requestNotificationPermissions, returnsNormally);
   // });
 
-  // test('should initializeNotifications', () {
-  //   final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-  //   final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
-  //       MockFlutterLocalNotificationsPlugin();
-  //   final SILFCM fcm = SILFCM(
-  //       firebaseMessagingObj: fbm,
-  //       localNotifications: mockFlutterNotificationsPlugin);
+  test('should initializeNotifications', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
+        MockFlutterLocalNotificationsPlugin();
 
-  //   fcm.initializeNotifications();
+    final SILFCM fcm = SILFCM(
+        firebaseMessagingObj: fbm,
+        localNotifications: mockFlutterNotificationsPlugin);
 
-  //   expectLater(
-  //       mockFlutterNotificationsPlugin.initialize.call, isA<Function>());
+    fcm.initializeLocalNotifications();
 
-  //   expectSync(mockFlutterNotificationsPlugin.initialize.call,
-  //       throwsNoSuchMethodError);
-  // });
+    expectLater(
+        mockFlutterNotificationsPlugin.initialize.call, isA<Function>());
 
-  // test('should initializeIOSInitializationSettings', () {
-  //   final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-  //   final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
-  //       MockFlutterLocalNotificationsPlugin();
-  //   final SILFCM fcm = SILFCM(
-  //       firebaseMessagingObj: fbm,
-  //       localNotifications: mockFlutterNotificationsPlugin);
+    expectSync(mockFlutterNotificationsPlugin.initialize.call,
+        throwsNoSuchMethodError);
+  });
 
-  //   final IOSInitializationSettings iosSettings =
-  //       fcm.initializeIOSInitializationSettings();
+  test('should initializeIOSInitializationSettings', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
+        MockFlutterLocalNotificationsPlugin();
+    final SILFCM fcm = SILFCM(
+        firebaseMessagingObj: fbm,
+        localNotifications: mockFlutterNotificationsPlugin);
 
-  //   expect(iosSettings, isA<IOSInitializationSettings>());
-  //   expect(iosSettings.onDidReceiveLocalNotification, isNotNull);
-  //   expectSync(
-  //       iosSettings.onDidReceiveLocalNotification(1, 'test', 'test', 'test'),
-  //       isA<Future<void>>());
-  // });
+    final IOSInitializationSettings iosSettings =
+        fcm.initializeIOSInitializationSettings();
+
+    expect(iosSettings, isA<IOSInitializationSettings>());
+    expect(iosSettings.onDidReceiveLocalNotification, isNotNull);
+    expectSync(
+        iosSettings.onDidReceiveLocalNotification!(1, 'test', 'test', 'test'),
+        isA<Future<void>>());
+  });
 }
