@@ -50,6 +50,15 @@ void main() {
         isA<Future<dynamic>>());
   });
 
+  test('should call initializeMacOSInitializationSettings', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm, isA<SILFCM>());
+    final MacOSInitializationSettings settings =
+        fcm.initializeMacOSInitializationSettings();
+    expect(settings, isA<MacOSInitializationSettings>());
+  });
+
   test('should get  device token', () {
     final MockFirebaseMessaging fbm = MockFirebaseMessaging();
     final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
@@ -73,6 +82,19 @@ void main() {
 
     final NotificationSettings perms =
         await fcm.requestIOSFCMMessagingPermission();
+
+    expect(perms.alert, AppleNotificationSetting.enabled);
+    expect(perms.announcement, AppleNotificationSetting.enabled);
+  });
+
+  test('should request macOS permission', () async {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+    expect(fcm.requestMacOSFCMMessagingPermission(),
+        isA<Future<NotificationSettings>>());
+
+    final NotificationSettings perms =
+        await fcm.requestMacOSFCMMessagingPermission();
 
     expect(perms.alert, AppleNotificationSetting.enabled);
     expect(perms.announcement, AppleNotificationSetting.enabled);
@@ -234,5 +256,19 @@ void main() {
     expectSync(
         iosSettings.onDidReceiveLocalNotification!(1, 'test', 'test', 'test'),
         isA<Future<void>>());
+  });
+
+  test('should initializeMacOSInitializationSettings', () {
+    final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+    final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
+        MockFlutterLocalNotificationsPlugin();
+    final SILFCM fcm = SILFCM(
+        firebaseMessagingObj: fbm,
+        localNotifications: mockFlutterNotificationsPlugin);
+
+    final MacOSInitializationSettings macOSSettings =
+        fcm.initializeMacOSInitializationSettings();
+
+    expect(macOSSettings, isA<MacOSInitializationSettings>());
   });
 }

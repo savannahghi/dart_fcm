@@ -101,7 +101,10 @@ class SILFCM {
           notificationDetails = const NotificationDetails();
         }
 
-        // todo: setup macos NotificationDetails
+        // setup macos NotificationDetails
+        if (platform == TargetPlatform.macOS) {
+          notificationDetails = const NotificationDetails();
+        }
 
         // todo: setup linux NotificationDetails
 
@@ -119,8 +122,12 @@ class SILFCM {
     final IOSInitializationSettings iOSSettings =
         this.initializeIOSInitializationSettings();
 
+    final MacOSInitializationSettings macOSSettings =
+        this.initializeMacOSInitializationSettings();
+
     final InitializationSettings initializationSettings =
-        InitializationSettings(android: androidSettings, iOS: iOSSettings);
+        InitializationSettings(
+            android: androidSettings, iOS: iOSSettings, macOS: macOSSettings);
 
     await localNotificationsPlugin.initialize(
       initializationSettings,
@@ -146,9 +153,25 @@ class SILFCM {
     );
   }
 
+  MacOSInitializationSettings initializeMacOSInitializationSettings() {
+    return const MacOSInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
+  }
+
   /// [requestIOSFCMMessagingPermission] used to request messaging permissions for
   /// ios platform.
   Future<NotificationSettings> requestIOSFCMMessagingPermission() async {
+    final NotificationSettings settings =
+        await firebaseMessaging.requestPermission(provisional: true);
+    return settings;
+  }
+
+  /// [requestMacOSFCMMessagingPermission] used to request messaging permissions for
+  /// macOS platform.
+  Future<NotificationSettings> requestMacOSFCMMessagingPermission() async {
     final NotificationSettings settings =
         await firebaseMessaging.requestPermission(provisional: true);
     return settings;
