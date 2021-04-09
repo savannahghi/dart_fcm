@@ -12,5 +12,6 @@ sil_fcm_tests:
     - flutter pub get
     - flutter analyze
     - flutter test --coverage test
+    - lcov --remove coverage/lcov.info 'lib/**/setup_on_message.dart' -o coverage/lcov.info
     - genhtml -q -o coverage coverage/lcov.info
     - python3 check_coverage.py

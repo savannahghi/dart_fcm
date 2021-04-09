@@ -1,6 +1,11 @@
+import 'package:flutter/services.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mockito/mockito.dart';
+import 'package:firebase_messaging_platform_interface/firebase_messaging_platform_interface.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_local_notifications_platform_interface/flutter_local_notifications_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 class MockFirebaseMessaging extends Mock implements FirebaseMessaging {
   @override
@@ -51,3 +56,11 @@ class MockFlutterLocalNotificationsPlugin extends Mock
   }) async =>
       true;
 }
+
+class MockMethodChannel extends Mock implements MethodChannel {}
+
+class MockFlutterLocalNotificationsPlugin2 extends Mock
+    with
+        MockPlatformInterfaceMixin // ignore: prefer_mixin
+    implements
+        FlutterLocalNotificationsPlatform {}

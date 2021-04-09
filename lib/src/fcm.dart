@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:sil_fcm/src/reminder_notification.dart';
+import 'package:sil_fcm/src/setup_on_message.dart';
 
 class SILFCM {
   factory SILFCM(
@@ -41,7 +42,7 @@ class SILFCM {
     final TargetPlatform platform = Theme.of(context).platform;
     await this.initializeLocalNotifications();
     if (platform == TargetPlatform.iOS) {
-      this.requestIOSLocalNotificationsPermissions();
+      await this.requestIOSLocalNotificationsPermissions();
       final NotificationSettings settings =
           await this.requestIOSFCMMessagingPermission();
       if (settings.authorizationStatus != AuthorizationStatus.authorized) {
@@ -75,43 +76,11 @@ class SILFCM {
   /// [listenOnDeviceTokenChanges] when initiate a callback once the device token changes
   Future<void> listenOnDeviceTokenChanges(dynamic graphQLClient) async {}
 
-  Future<void> onMessageSetup({required BuildContext context}) async {
+  Future<void> onMessageSetup<T extends FirebaseMessaging>(
+      {required BuildContext context}) async {
     final TargetPlatform platform = Theme.of(context).platform;
-    FirebaseMessaging.onMessage.listen(
-      (RemoteMessage message) {
-        /// handle [notifications].The payload contains a notification property, which will be used to present a visible notification to the user.
-        final RemoteNotification? notification = message.notification;
-        late NotificationDetails notificationDetails;
-
-        /// setup android NotificationDetails
-        if (platform == TargetPlatform.android) {
-          final AndroidNotification? android = message.notification?.android;
-          notificationDetails = NotificationDetails(
-            android: AndroidNotificationDetails(
-              this.androidChannel.id,
-              this.androidChannel.name,
-              this.androidChannel.description,
-              icon: android?.smallIcon,
-            ),
-          );
-        }
-
-        /// setup ios NotificationDetails
-        if (platform == TargetPlatform.iOS) {
-          notificationDetails = const NotificationDetails();
-        }
-
-        // setup macos NotificationDetails
-        if (platform == TargetPlatform.macOS) {
-          notificationDetails = const NotificationDetails();
-        }
-
-        // todo: setup linux NotificationDetails
-
-        localNotificationsPlugin.show(notification.hashCode,
-            notification?.title, notification?.body, notificationDetails);
-      },
-    );
+    await createAndroidHighImportanceChannel();
+    return setupOnMessage(platform, androidChannel, localNotificationsPlugin);
   }
 
   /// [initializeLocalNotifications] bootstraps local notifications to the application
@@ -131,13 +100,18 @@ class SILFCM {
 
     await localNotificationsPlugin.initialize(
       initializationSettings,
-      onSelectNotification: (String? payload) async {
-        if (payload != null) {
-          debugPrint('notification payload: $payload');
-        }
-        this.selectNotificationSubject.add(payload!);
-      },
+      onSelectNotification: (String? payload) =>
+          this.onNotificationSelected(payload),
     );
+  }
+
+  Future<bool> onNotificationSelected(String? payload) async {
+    if (payload == null) {
+      debugPrint('notification payload: $payload');
+      return false;
+    }
+    this.selectNotificationSubject.add(payload);
+    return true;
   }
 
   IOSInitializationSettings initializeIOSInitializationSettings() {
@@ -184,8 +158,8 @@ class SILFCM {
   Future<void> resetToken() => firebaseMessaging.deleteToken();
 
   /// [requestIOSLocalNotificationsPermissions] request local notifications permissions for iOS
-  void requestIOSLocalNotificationsPermissions() {
-    localNotificationsPlugin
+  Future<bool?> requestIOSLocalNotificationsPermissions() async {
+    return localNotificationsPlugin
         .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
