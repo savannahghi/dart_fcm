@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:sil_fcm/src/helpers.dart';
+
 import 'package:sil_fcm/src/reminder_notification.dart';
 import 'package:sil_fcm/src/setup_on_message.dart';
 
@@ -27,7 +29,7 @@ class SILFCM {
   /// create an instance of [FlutterLocalNotificationsPlugin]
   static late FlutterLocalNotificationsPlugin localNotificationsPlugin;
 
-  late AndroidNotificationChannel androidChannel;
+  AndroidNotificationChannel? androidChannel;
 
   final BehaviorSubject<ReminderNotification>
       didReceiveLocalNotificationSubject =
@@ -42,7 +44,8 @@ class SILFCM {
     final TargetPlatform platform = Theme.of(context).platform;
     await this.initializeLocalNotifications();
     if (platform == TargetPlatform.iOS) {
-      await this.requestIOSLocalNotificationsPermissions();
+      await requestIOSLocalNotificationsPermissions(
+          localNotificationsPlugin: localNotificationsPlugin);
       final NotificationSettings settings =
           await this.requestIOSFCMMessagingPermission();
       if (settings.authorizationStatus != AuthorizationStatus.authorized) {
@@ -52,14 +55,12 @@ class SILFCM {
 
     // create high importance channel for android
     if (platform == TargetPlatform.android) {
-      this.createAndroidHighImportanceChannel();
+      androidChannel = await createAndroidHighImportanceChannel(
+          localNotificationsPlugin: localNotificationsPlugin);
     }
 
     // setup device token
-    // todo: save this intial device token to the backend
     await this.getDeviceToken();
-
-    // todo : add mechanism to listen a register device tokens
 
     // enabling foreground notifications so that they can be visible while the app is in the foreground
     await firebaseMessaging.setForegroundNotificationPresentationOptions(
@@ -79,7 +80,6 @@ class SILFCM {
   Future<void> onMessageSetup<T extends FirebaseMessaging>(
       {required BuildContext context}) async {
     final TargetPlatform platform = Theme.of(context).platform;
-    await createAndroidHighImportanceChannel();
     return setupOnMessage(platform, androidChannel, localNotificationsPlugin);
   }
 
@@ -98,11 +98,10 @@ class SILFCM {
         InitializationSettings(
             android: androidSettings, iOS: iOSSettings, macOS: macOSSettings);
 
-    await localNotificationsPlugin.initialize(
-      initializationSettings,
-      onSelectNotification: (String? payload) =>
-          this.onNotificationSelected(payload),
-    );
+    await initializeIOS(
+        initializationSettings: initializationSettings,
+        localNotificationsPlugin: localNotificationsPlugin,
+        onSelect: this.onNotificationSelected);
   }
 
   Future<bool> onNotificationSelected(String? payload) async {
@@ -156,31 +155,4 @@ class SILFCM {
 
   /// [resetToken] deletes a device token
   Future<void> resetToken() => firebaseMessaging.deleteToken();
-
-  /// [requestIOSLocalNotificationsPermissions] request local notifications permissions for iOS
-  Future<bool?> requestIOSLocalNotificationsPermissions() async {
-    return localNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
-        ?.requestPermissions(
-          alert: true,
-          badge: true,
-          sound: true,
-        );
-  }
-
-  /// [createAndroidHighImportanceChannel]
-  Future<void> createAndroidHighImportanceChannel() async {
-    this.androidChannel = const AndroidNotificationChannel(
-      'high_importance_channel', // id
-      'High Importance Notifications', // title
-      'This channel is used for important notifications.', // description
-      importance: Importance.max,
-    );
-
-    await localNotificationsPlugin
-        .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
-        ?.createNotificationChannel(this.androidChannel);
-  }
 }

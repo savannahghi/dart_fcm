@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 
@@ -53,14 +52,6 @@ void main() {
       expect(fcm.resetToken(), isA<Future<void>>());
     });
 
-    test('should create android channel', () async {
-      final MockFirebaseMessaging fbm = MockFirebaseMessaging();
-      final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
-      await fcm.createAndroidHighImportanceChannel();
-      expect(fcm.androidChannel, isNotNull);
-      expect(fcm.androidChannel, isA<AndroidNotificationChannel>());
-    });
-
     test('should initialize local notifications', () async {
       final MockFirebaseMessaging fbm = MockFirebaseMessaging();
       final MockFlutterLocalNotificationsPlugin ln =
@@ -109,9 +100,7 @@ void main() {
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle();
 
-      //create high importance channel method is called successfully
-      expect(fcm.createAndroidHighImportanceChannel(), isA<Future<void>>());
-      expect(fcm.createAndroidHighImportanceChannel(), isNotNull);
+      expect(fcm.androidChannel, isNotNull);
 
       //expect get token is called
       expect(fcm.getDeviceToken(), isA<Future<String?>>());

@@ -8,7 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 /// Anyone with an idea of how to do, please implement and teach us.
 void setupOnMessage(
     TargetPlatform platform,
-    AndroidNotificationChannel androidChannel,
+    AndroidNotificationChannel? androidChannel,
     FlutterLocalNotificationsPlugin localNotificationsPlugin) {
   FirebaseMessaging.onMessage.listen(
     (RemoteMessage message) {
@@ -17,7 +17,7 @@ void setupOnMessage(
       late NotificationDetails notificationDetails;
 
       /// setup android NotificationDetails
-      if (platform == TargetPlatform.android) {
+      if (platform == TargetPlatform.android && androidChannel != null  ) {
         final AndroidNotification? android = message.notification?.android;
         notificationDetails = NotificationDetails(
           android: AndroidNotificationDetails(
