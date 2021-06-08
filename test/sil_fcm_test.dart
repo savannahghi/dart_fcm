@@ -135,13 +135,13 @@ void main() {
 
       final bool v1 = await fcm.onNotificationSelected(null);
       expectLater(v1, equals(false));
-      expect(fcm.selectNotificationSubject.valueWrapper, isNull);
+      expect(fcm.selectNotificationSubject.valueOrNull, isNull);
 
       final bool v2 = await fcm.onNotificationSelected('payload');
       expectLater(v2, equals(true));
-      expect(fcm.selectNotificationSubject.valueWrapper, isNotNull);
+      expect(fcm.selectNotificationSubject.valueOrNull, isNotNull);
       expect(
-          fcm.selectNotificationSubject.valueWrapper!.value, equals('payload'));
+          fcm.selectNotificationSubject.valueOrNull, equals('payload'));
     });
   });
 }
