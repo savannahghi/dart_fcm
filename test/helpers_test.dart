@@ -12,7 +12,7 @@ import 'helpers_test.mocks.dart';
   IOSFlutterLocalNotificationsPlugin
 ])
 void main() {
-  test('should create android channenl', () async {
+  test('should create android channel', () async {
     final MockFlutterLocalNotificationsPlugin plugin =
         MockFlutterLocalNotificationsPlugin();
 

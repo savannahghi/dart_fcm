@@ -64,7 +64,7 @@ void main() {
       // should find the textButton
       expect(find.byType(TextButton), findsOneWidget);
 
-      // should successfully tap the textbutton
+      // should successfully tap the text button
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle();
 

@@ -17,7 +17,7 @@ void setupOnMessage(
       late NotificationDetails notificationDetails;
 
       /// setup android NotificationDetails
-      if (platform == TargetPlatform.android && androidChannel != null  ) {
+      if (platform == TargetPlatform.android && androidChannel != null) {
         final AndroidNotification? android = message.notification?.android;
         notificationDetails = NotificationDetails(
           android: AndroidNotificationDetails(
