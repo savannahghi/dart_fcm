@@ -1,8 +1,10 @@
-name: sil_fcm
+name: dart_fcm
 description: A wrapper package for setting up and consuming cloud notifications from firebase
-version: 0.0.1
-author: dmwangi@savannahinformatics.com
-homepage: https://gitlab.slade360emr.com/optimalhealth/sil_dart_utils
+version: 0.0.18
+homepage: https://github.com/savannahghi/dart_fcm
+repository: https://github.com/savannahghi/dart_fcm
+issue_tracker: https://github.com/savannahghi/dart_fcm/issues
+documentation: https://github.com/savannahghi/dart_fcm/doc
 
 environment:  
   sdk: '>=2.12.0 <3.0.0'
@@ -10,8 +12,8 @@ environment:
 
 
 dependencies:
-  firebase_core: "^1.2.1"
-  firebase_messaging: "^10.0.1" 
+  firebase_core: ^1.3.0
+  firebase_messaging: ^10.0.2 
   flutter:
     sdk: flutter   
   flutter_local_notifications: ^5.0.0+4
@@ -27,5 +29,4 @@ dev_dependencies:
   test_api: '>=0.2.19'
 
   
-
 flutter:

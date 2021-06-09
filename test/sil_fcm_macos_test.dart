@@ -5,7 +5,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:sil_fcm/sil_fcm.dart';
+import 'package:dart_fcm/dart_fcm.dart';
 
 import 'mocks.dart';
 

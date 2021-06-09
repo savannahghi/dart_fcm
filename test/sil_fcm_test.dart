@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:sil_fcm/sil_fcm.dart';
-import 'package:sil_fcm/src/reminder_notification.dart';
+import 'package:dart_fcm/dart_fcm.dart';
+import 'package:dart_fcm/src/reminder_notification.dart';
 
 import 'mocks.dart';
 
