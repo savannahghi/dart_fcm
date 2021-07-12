@@ -40,7 +40,10 @@ class SILFCM {
 
   /// [configure] is responsible for correctly setting up local notifications ( and asking for permission if needed)
   /// and wiring-up firebase messaging [onMessage] callback to show fcm messages
-  Future<SILFCM> configure({required BuildContext context}) async {
+  Future<SILFCM> configure({
+    required BuildContext context,
+    OnMessageCallback? callback,
+  }) async {
     final TargetPlatform platform = Theme.of(context).platform;
     await this.initializeLocalNotifications();
     if (platform == TargetPlatform.iOS) {
@@ -69,7 +72,7 @@ class SILFCM {
       sound: true,
     );
 
-    onMessageSetup(context: context);
+    onMessageSetup(context: context, callback: callback);
 
     return Future<SILFCM>.value(this);
   }
@@ -77,10 +80,13 @@ class SILFCM {
   /// [listenOnDeviceTokenChanges] when initiate a callback once the device token changes
   Future<void> listenOnDeviceTokenChanges(dynamic graphQLClient) async {}
 
-  Future<void> onMessageSetup<T extends FirebaseMessaging>(
-      {required BuildContext context}) async {
+  Future<void> onMessageSetup<T extends FirebaseMessaging>({
+    required BuildContext context,
+    OnMessageCallback? callback,
+  }) async {
     final TargetPlatform platform = Theme.of(context).platform;
-    return setupOnMessage(platform, androidChannel, localNotificationsPlugin);
+    return setupOnMessage(
+        platform, androidChannel, localNotificationsPlugin, callback);
   }
 
   /// [initializeLocalNotifications] bootstraps local notifications to the application
