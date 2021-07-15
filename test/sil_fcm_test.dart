@@ -52,6 +52,12 @@ void main() {
       expect(fcm.resetToken(), isA<Future<void>>());
     });
 
+    test('should listen to token refresh', () {
+      final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+      final SILFCM fcm = SILFCM(firebaseMessagingObj: fbm);
+      expect(fcm.onDeviceTokenRefresh(), isA<Stream<String>>());
+    });
+
     test('should initialize local notifications', () async {
       final MockFirebaseMessaging fbm = MockFirebaseMessaging();
       final MockFlutterLocalNotificationsPlugin ln =

@@ -161,4 +161,6 @@ class SILFCM {
 
   /// [resetToken] deletes a device token
   Future<void> resetToken() => firebaseMessaging.deleteToken();
+
+  Stream<String> onDeviceTokenRefresh() => firebaseMessaging.onTokenRefresh;
 }
