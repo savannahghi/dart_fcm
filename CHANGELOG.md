@@ -1,3 +1,7 @@
+### 0.0.20
+
+- feat: add onTokenRefresh stream
+
 ### 0.0.19
 
 - feat: add onMessage Callback
