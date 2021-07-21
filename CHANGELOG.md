@@ -1,3 +1,7 @@
+### 0.0.21
+
+- doc: documentation fixes and example
+
 ### 0.0.20
 
 - feat: add onTokenRefresh stream
