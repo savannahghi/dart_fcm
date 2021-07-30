@@ -1,6 +1,8 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
+import 'package:debug_logger/debug_logger.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 typedef OnMessageCallback = void Function(
     Map<String, dynamic>? data, String? title, String? body);
@@ -15,6 +17,7 @@ void setupOnMessage(
   FlutterLocalNotificationsPlugin localNotificationsPlugin,
   OnMessageCallback? callback,
 ) {
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   FirebaseMessaging.onMessage.listen(
     (RemoteMessage message) {
       /// handle [notifications].The payload contains a notification property, which will be used to present a visible notification to the user.
@@ -33,6 +36,9 @@ void setupOnMessage(
             androidChannel.name,
             androidChannel.description,
             icon: android?.smallIcon,
+            importance: Importance.max,
+            priority: Priority.high,
+            showProgress: true,
           ),
         );
       }
@@ -53,4 +59,8 @@ void setupOnMessage(
           notification?.body, notificationDetails);
     },
   );
+}
+
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  DebugLogger.debug('Should be handling a background message');
 }

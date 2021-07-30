@@ -1,3 +1,7 @@
+### 0.0.22
+
+- feat: add a listener for onBackground notifications
+
 ### 0.0.21
 
 - doc: documentation fixes and example
