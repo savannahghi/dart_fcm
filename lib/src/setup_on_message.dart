@@ -24,9 +24,6 @@ void setupOnMessage(
       final RemoteNotification? notification = message.notification;
       late NotificationDetails notificationDetails;
 
-      callback!(message.data, message.notification!.title,
-          message.notification!.body);
-
       /// setup android NotificationDetails
       if (platform == TargetPlatform.android && androidChannel != null) {
         final AndroidNotification? android = message.notification?.android;
@@ -56,7 +53,44 @@ void setupOnMessage(
       // todo: setup linux NotificationDetails
 
       localNotificationsPlugin.show(notification.hashCode, notification?.title,
-          notification?.body, notificationDetails);
+          notification?.body, notificationDetails,
+          payload: notification?.title);
+    },
+  );
+
+  FirebaseMessaging.onMessageOpenedApp.listen(
+    (RemoteMessage message) {
+      // ignore: unused_local_variable
+      late NotificationDetails notificationDetails;
+
+      callback!(message.data, message.notification!.title,
+          message.notification!.body);
+
+      /// setup android NotificationDetails
+      if (platform == TargetPlatform.android && androidChannel != null) {
+        final AndroidNotification? android = message.notification?.android;
+        notificationDetails = NotificationDetails(
+          android: AndroidNotificationDetails(
+            androidChannel.id,
+            androidChannel.name,
+            androidChannel.description,
+            icon: android?.smallIcon,
+            importance: Importance.max,
+            priority: Priority.high,
+            showProgress: true,
+          ),
+        );
+      }
+
+      /// setup ios NotificationDetails
+      if (platform == TargetPlatform.iOS) {
+        notificationDetails = const NotificationDetails();
+      }
+
+      // setup macos NotificationDetails
+      if (platform == TargetPlatform.macOS) {
+        notificationDetails = const NotificationDetails();
+      }
     },
   );
 }
