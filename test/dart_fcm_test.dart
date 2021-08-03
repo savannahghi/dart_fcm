@@ -85,6 +85,11 @@ void main() {
       final SILFCM fcm = SILFCM(
           firebaseMessagingObj: fbm,
           localNotifications: mockFlutterNotificationsPlugin);
+      void testFunction(
+        Map<String, dynamic>? data,
+        String? title,
+        String? body,
+      ) {}
 
       await tester.pumpWidget(Builder(builder: (BuildContext context) {
         return MaterialApp(
@@ -93,7 +98,7 @@ void main() {
           ),
           home: TextButton(
               onPressed: () {
-                fcm.configure(context: context);
+                fcm.configure(context: context, callback: testFunction);
               },
               child: const Text('configure on android')),
         );

@@ -50,6 +50,11 @@ void main() {
       final SILFCM fcm = SILFCM(
           firebaseMessagingObj: fbm,
           localNotifications: mockFlutterNotificationsPlugin);
+      void testFunction(
+        Map<String, dynamic>? data,
+        String? title,
+        String? body,
+      ) {}
 
       await tester.pumpWidget(
         Builder(
@@ -59,7 +64,8 @@ void main() {
                 platform: TargetPlatform.iOS,
               ),
               home: TextButton(
-                  onPressed: () async => fcm.configure(context: context),
+                  onPressed: () async =>
+                      fcm.configure(context: context, callback: testFunction),
                   child: const Text('configure on ios')),
             );
           },
