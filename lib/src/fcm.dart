@@ -26,7 +26,7 @@ class SILFCM {
 
   static late FirebaseMessaging firebaseMessaging;
 
-  late Function navigationCallback;
+  late OnMessageCallback? navigationCallback;
 
   /// create an instance of [FlutterLocalNotificationsPlugin]
   static late FlutterLocalNotificationsPlugin localNotificationsPlugin;
@@ -46,7 +46,7 @@ class SILFCM {
     required BuildContext context,
     OnMessageCallback? callback,
   }) async {
-    navigationCallback = callback!;
+    navigationCallback = callback;
     final TargetPlatform platform = Theme.of(context).platform;
     await this.initializeLocalNotifications();
     if (platform == TargetPlatform.iOS) {
@@ -119,7 +119,7 @@ class SILFCM {
       return false;
     }
     this.selectNotificationSubject.add(payload);
-    this.navigationCallback(<String, dynamic>{}, payload, payload);
+    this.navigationCallback?.call(<String, dynamic>{}, payload, payload);
     return true;
   }
 

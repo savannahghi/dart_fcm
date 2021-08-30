@@ -1,6 +1,11 @@
+### 0.0.24
+
+- fix: null check error on SILFCM.configure function
+
 ### 0.0.23
 
 - feat: add onMessageOpenedApp callback
+
 ### 0.0.22
 
 - feat: add a listener for onBackground notifications
