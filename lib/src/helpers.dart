@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:rxdart/rxdart.dart';
 
 const AndroidNotificationChannel androidChannel = AndroidNotificationChannel(
   'high_importance_channel', // id
@@ -39,4 +40,21 @@ Future<bool?> requestIOSLocalNotificationsPermissions(
         badge: true,
         sound: true,
       );
+}
+
+class NotificationPayloadBehaviorObject {
+  factory NotificationPayloadBehaviorObject() {
+    return _singleton;
+  }
+
+  NotificationPayloadBehaviorObject._internal();
+
+  static final NotificationPayloadBehaviorObject _singleton =
+      NotificationPayloadBehaviorObject._internal();
+
+  BehaviorSubject<Map<String, dynamic>> notificationData =
+      BehaviorSubject<Map<String, dynamic>>();
+
+  BehaviorSubject<String> notificationTitle = BehaviorSubject<String>();
+  BehaviorSubject<String> notificationBody = BehaviorSubject<String>();
 }

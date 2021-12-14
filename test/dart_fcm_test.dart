@@ -1,10 +1,9 @@
+import 'package:dart_fcm/dart_fcm.dart';
+import 'package:dart_fcm/src/helpers.dart';
+import 'package:dart_fcm/src/reminder_notification.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:dart_fcm/dart_fcm.dart';
-import 'package:dart_fcm/src/reminder_notification.dart';
 
 import 'mocks.dart';
 
@@ -135,10 +134,16 @@ void main() {
           throwsNoSuchMethodError);
     });
 
-    test('should onNotificationSelected', () async {
+    test('should onNotificationSelected and return false', () async {
       final MockFirebaseMessaging fbm = MockFirebaseMessaging();
       final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
           MockFlutterLocalNotificationsPlugin();
+
+      NotificationPayloadBehaviorObject()
+          .notificationData
+          .add(<String, dynamic>{'test': 'test'});
+      NotificationPayloadBehaviorObject().notificationTitle.add('title');
+      NotificationPayloadBehaviorObject().notificationBody.add('body');
 
       final SILFCM fcm = SILFCM(
           firebaseMessagingObj: fbm,
@@ -147,6 +152,22 @@ void main() {
       final bool v1 = await fcm.onNotificationSelected(null);
       expectLater(v1, equals(false));
       expect(fcm.selectNotificationSubject.valueOrNull, isNull);
+    });
+
+    test('should onNotificationSelected and return true', () async {
+      final MockFirebaseMessaging fbm = MockFirebaseMessaging();
+      final MockFlutterLocalNotificationsPlugin mockFlutterNotificationsPlugin =
+          MockFlutterLocalNotificationsPlugin();
+
+      NotificationPayloadBehaviorObject()
+          .notificationData
+          .add(<String, dynamic>{'test': 'test'});
+      NotificationPayloadBehaviorObject().notificationTitle.add('title');
+      NotificationPayloadBehaviorObject().notificationBody.add('body');
+
+      final SILFCM fcm = SILFCM(
+          firebaseMessagingObj: fbm,
+          localNotifications: mockFlutterNotificationsPlugin);
 
       final bool v2 = await fcm.onNotificationSelected('payload');
       expectLater(v2, equals(true));
