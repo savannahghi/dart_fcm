@@ -1,11 +1,10 @@
+import 'package:dart_fcm/dart_fcm.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_local_notifications/src/platform_specifics/ios/initialization_settings.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:dart_fcm/dart_fcm.dart';
 
 import 'mocks.dart';
 

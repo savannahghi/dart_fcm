@@ -1,8 +1,8 @@
-import 'package:flutter/widgets.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
+import 'package:dart_fcm/src/helpers.dart';
 import 'package:debug_logger/debug_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 typedef OnMessageCallback = void Function(
     Map<String, dynamic>? data, String? title, String? body);
@@ -21,8 +21,11 @@ void setupOnMessage(
   FirebaseMessaging.onMessage.listen(
     (RemoteMessage message) {
       /// handle [notifications].The payload contains a notification property, which will be used to present a visible notification to the user.
-      final RemoteNotification? notification = message.notification;
+      final RemoteNotification notification = message.notification!;
       late NotificationDetails notificationDetails;
+      final NotificationPayloadBehaviorObject
+          notificationPayloadBehaviorObject =
+          NotificationPayloadBehaviorObject();
 
       /// setup android NotificationDetails
       if (platform == TargetPlatform.android && androidChannel != null) {
@@ -50,11 +53,16 @@ void setupOnMessage(
         notificationDetails = const NotificationDetails();
       }
 
-      // todo: setup linux NotificationDetails
+      // save the notification payload
+      notificationPayloadBehaviorObject.notificationBody
+          .add(notification.body!);
+      notificationPayloadBehaviorObject.notificationTitle
+          .add(notification.title!);
+      notificationPayloadBehaviorObject.notificationData.add(message.data);
 
-      localNotificationsPlugin.show(notification.hashCode, notification?.title,
-          notification?.body, notificationDetails,
-          payload: notification?.title);
+      localNotificationsPlugin.show(notification.hashCode, notification.title,
+          notification.body, notificationDetails,
+          payload: notification.title);
     },
   );
 
