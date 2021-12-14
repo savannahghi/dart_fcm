@@ -1,3 +1,6 @@
+### 0.0.25
+
+- feat: add metadata to notifications
 ### 0.0.24
 
 - fix: null check error on SILFCM.configure function
