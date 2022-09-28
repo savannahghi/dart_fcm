@@ -4,7 +4,6 @@ import 'package:dart_fcm/src/helpers.dart';
 import 'package:dart_fcm/src/reminder_notification.dart';
 import 'package:dart_fcm/src/setup_on_message.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';

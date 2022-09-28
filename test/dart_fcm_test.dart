@@ -1,7 +1,6 @@
 import 'package:dart_fcm/dart_fcm.dart';
 import 'package:dart_fcm/src/helpers.dart';
 import 'package:dart_fcm/src/reminder_notification.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

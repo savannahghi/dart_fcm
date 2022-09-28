@@ -1,6 +1,12 @@
+### 0.1.0
+
+- chore: upgrade to flutter 3.0.5
+- feat: setup automated deployement to pub.dev
+
 ### 0.0.25
 
 - feat: add metadata to notifications
+
 ### 0.0.24
 
 - fix: null check error on SILFCM.configure function
@@ -29,7 +35,7 @@
 
 - test : assorted tests
 
-### Pre - [0.0.6] 
+### Pre - [0.0.6]
 
 - Code testing, refactor and upgrading design system for dart_fcm on both apps
 - Assorted bug fixes and enhancements

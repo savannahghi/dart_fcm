@@ -1,6 +1,6 @@
 name: dart_fcm
 description: A wrapper package for setting up and consuming cloud notifications from firebase
-version: 0.0.25
+version: 0.1.0
 homepage: https://github.com/savannahghi/dart_fcm
 repository: https://github.com/savannahghi/dart_fcm
 issue_tracker: https://github.com/savannahghi/dart_fcm/issues
@@ -18,6 +18,7 @@ dependencies:
   flutter:
     sdk: flutter   
   flutter_local_notifications: ^8.0.0
+  platform: ^3.1.0
   rxdart: ^0.27.1
 
 dev_dependencies:
